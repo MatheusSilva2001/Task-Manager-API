@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const userSchrema = z
+export const userSchema = z
   .object({
     name: z.string().min(2).max(255, "max 255 characters"),
     email: z
@@ -21,4 +21,4 @@ export const userSchrema = z
 
 
 //extract the inferred type
-export type UserDataTypes = z.infer<typeof userSchrema>;
+export type UserDataTypes = z.infer<typeof userSchema>;
