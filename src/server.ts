@@ -3,11 +3,14 @@ import { routes } from "./routes";
 import { appErrors } from "./errors/appErrors";
 import { sqliteConnection } from "./databases";
 import { runMigrations } from "./databases/migrations";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(routes);
 
 app.use(appErrors);
