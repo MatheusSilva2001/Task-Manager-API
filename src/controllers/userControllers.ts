@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { userServices } from "../services/UserServices";
+import { userSchema } from "../validations/userSchema";
+import { userServices } from "../services/userServices";
 import { userRepository } from "../repositories/userRepository";
 import { UUIDSchema } from "../validations/UUIDSchema";
-import { userSchema } from "../validations/userSchema";
 
 export const userControllers = {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -14,7 +14,7 @@ export const userControllers = {
         userRepository
       );
 
-      //SOLID
+      // SOLID
 
       res.status(201).json(userCreated);
     } catch (error) {
@@ -24,7 +24,7 @@ export const userControllers = {
 
   async read(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = UUIDSchema().parse({ id: req.userID});
+      const { id } = UUIDSchema().parse({ id: req.userID });
 
       const user = await userServices.read(id, userRepository);
 

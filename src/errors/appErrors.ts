@@ -9,5 +9,7 @@ export function appErrors(
 ) {
   console.log(error);
 
-res.status(error.statusCode || 400).json({ message: error.message || "Something went wrong"});
+  res
+    .status(error.statusCode || 400)
+    .json({ message: error.message || "Something went wrong" });
 }

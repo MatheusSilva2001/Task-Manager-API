@@ -2,12 +2,8 @@ import { z } from "zod";
 
 export const userSchema = z
   .object({
-    name: z.string().min(2).max(255, "max 255 characters"),
-    email: z
-      .string()
-      .email("email poorly formatted")
-      .max(255, "max 255 characters"),
-
+    name: z.string().min(3).max(255, "max 255 characters"),
+    email: z.string().email("email poorly formatted").max(255, "max 255 characters"),
     password: z
       .string()
       .min(7, "min 7 characters")
@@ -19,6 +15,4 @@ export const userSchema = z
   })
   .strict();
 
-
-//extract the inferred type
 export type UserDataTypes = z.infer<typeof userSchema>;
