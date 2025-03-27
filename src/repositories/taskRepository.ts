@@ -1,11 +1,20 @@
 import { sqliteConnection } from "../databases";
+import { AppError } from "../errors/appError";
+import { TaskDataCreate, UserTaskPagination } from "../services/taskServices";
 import { TaskDataTypes } from "../validations/taskSchema";
 
-export type CreateTaskDataType = TaskDataTypes & { id: string };
+export type CreateTaskDataType = TaskDataCreate & { id: string };
 export type UpdateTaskDataType = CreateTaskDataType & { update_at: Date };
 
 export const taskRepository = {
-  async create({ id, title, description, date, status, user_id }: CreateTaskDataType) {
+  async createTask({
+    id,
+    title,
+    description,
+    date,
+    status,
+    user_id,
+  }: CreateTaskDataType) {
     try {
       const db = await sqliteConnection();
 
@@ -36,6 +45,71 @@ export const taskRepository = {
     }
   },
 
+  async getTask({ userID, limit, offset, filter }: UserTaskPagination) {
+    try {
+      const db = await sqliteConnection();
+      let querySQL = "";
+      let tasks = [];
+
+      switch (filter) {
+        case "all":
+          querySQL = `
+          SELECT * FROM tasks
+          WHERE user_id = ?
+          ORDER BY created_at DESC
+          LIMIT ? OFFSET ?;
+        `;
+
+          tasks = await db.all(querySQL, [userID, limit, offset]);
+
+          break;
+
+        case "completed":
+          querySQL = `
+          SELECT * FROM tasks
+          WHERE user_id = ? status = 'completed'
+          ORDER BY created_at DESC
+          LIMIT ? OFFSET ?;
+        `;
+
+          tasks = await db.all(querySQL, [userID, limit, offset]);
+
+          break;
+
+        case "pending":
+          querySQL = `
+          SELECT * FROM tasks
+          WHERE user_id = ? status = 'pending' AND date >= CURRENT_DATE
+          ORDER BY created_at DESC
+          LIMIT ? OFFSET ?;
+        `;
+
+          tasks = await db.all(querySQL, [userID, limit, offset]);
+
+          break;
+
+        case "late":
+          querySQL = `
+          SELECT * FROM tasks
+          WHERE user_id = ? status = 'pending' AND date <>=> CURRENT_DATE
+          ORDER BY created_at DESC
+          LIMIT ? OFFSET ?;
+        `;
+
+          tasks = await db.all(querySQL, [userID, limit, offset]);
+
+          break;
+
+        default:
+          throw new AppError("Invalid filter", 400);
+      }
+
+      return tasks;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async updateTask({
     id,
     title,
@@ -54,7 +128,15 @@ export const taskRepository = {
       WHERE id = ? AND user_id = ?
     `;
 
-      await db.run(query, [title, description, date, status, update_at, id, user_id]);
+      await db.run(query, [
+        title,
+        description,
+        date,
+        status,
+        update_at,
+        id,
+        user_id,
+      ]);
 
       return { id, title, description, date, status, user_id, update_at };
     } catch (error) {

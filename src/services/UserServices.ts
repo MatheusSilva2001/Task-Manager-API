@@ -1,9 +1,8 @@
-import { CreateUserDataType } from "../repositories/userRepository";
-import { UserDataTypes } from "../validations/userSchema";
 import { randomUUID } from "node:crypto";
-import { hash } from "bcrypt";
 import { AppError } from "../errors/appError";
-import { NextFunction } from "express";
+import { TaskDataTypes } from "../validations/taskSchema";
+
+export type CreateTaskDataTypes = TaskDataCreate & { user_id: string};
 
 export type UserRepositoryTypes = {
   create(data: CreateUserDataType): Promise<CreateUserDataType | undefined>;
