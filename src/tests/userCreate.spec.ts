@@ -1,27 +1,27 @@
-import { expect, test, describe } from "vitest";
+import { describe, it, expect } from "vitest";
 import { userRepositoryInMemory } from "../repositories/userRepositoryInMemory";
 import { userServices } from "../services/userServices";
 
 describe("test create user functions", async () => {
   const user = {
-    name: "João",
-    email: "user@email.com",
-    password: "123",
+    name: "Emanuel Quintino",
+    email: "emanuelquintino@hotmail.com",
+    password: "1234567",
   };
 
-  test("should create user", async () => {
+  it("should create a user!", async () => {
     const userCreated = await userServices.create(user, userRepositoryInMemory);
-
     expect(userCreated).toBeDefined();
     expect(userCreated).toHaveProperty("id");
     expect(userCreated?.email).toEqual(user.email);
   });
 
-  test("should not create user with same email", async () => {
+  it("should not create user if email already exists!", async () => {
     try {
-      await userServices.create(user, userRepositoryInMemory);
+      const userCreated = await userServices.create(user, userRepositoryInMemory);
+      if (userCreated) throw new Error("expected an error but the user was created!");
     } catch (error: any) {
-      expect(error.message).toBe("email already exists");
+      expect(error.message).toBe("email already exists!");
     }
   });
 });

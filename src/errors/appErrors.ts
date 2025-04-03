@@ -1,15 +1,22 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { AppError } from "./appError";
 
 export function appErrors(
   error: AppError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
-  console.log(error);
+  console.error("Middleware Error - ", error);
 
-  res
-    .status(error.statusCode || 400)
-    .json({ message: error.message || "Something went wrong" });
+  if (error instanceof ZodError) {
+    return res
+      .status(error.status || 400)
+      .json({ message: JSON.parse(error.message)[0].message || "Server Error!" });
+  }
+
+  return res
+    .status(error.status || 400)
+    .json({ message: error.message || "Something went wrong!" });
 }

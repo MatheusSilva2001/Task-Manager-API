@@ -1,32 +1,34 @@
 import { randomUUID } from "node:crypto";
+import { hash } from "bcrypt";
+import { CreateUserDataType } from "../repositories/userRepository";
 import { AppError } from "../errors/appError";
-import { TaskDataTypes } from "../validations/taskSchema";
-
-export type CreateTaskDataTypes = TaskDataCreate & { user_id: string};
+import { UserDataTypes } from "../validations/userSchema";
 
 export type UserRepositoryTypes = {
-  create(data: CreateUserDataType): Promise<CreateUserDataType | undefined>;
-  getUserByEmail(email: string): Promise<CreateUserDataType | undefined>;
+  createUser(data: CreateUserDataType): Promise<CreateUserDataType | undefined>;
   getUserByID(id: string): Promise<Partial<CreateUserDataType> | undefined>;
+  getUserByEmail(email: string): Promise<CreateUserDataType | undefined>;
 };
 
 export const userServices = {
-  async create(
-    { name, email, password }: UserDataTypes,
-    repository: UserRepositoryTypes
-  ) {
+  async create(data: UserDataTypes, repository: UserRepositoryTypes) {
     try {
+      const { name, email, password } = data;
+
       const user = await repository.getUserByEmail(email);
-      if (user) throw new AppError("email already exists", 400);
+
+      if (user) throw new AppError("email already exists!", 400);
 
       const passwordHash = await hash(password, 10);
 
-      const userCreated = await repository.create({
+      const userData = {
         id: randomUUID(),
         name,
         email,
         password: passwordHash,
-      });
+      };
+
+      const userCreated = await repository.createUser(userData);
 
       if (!userCreated) return;
       userCreated.password = "*".repeat(userCreated.password.length);
@@ -39,13 +41,13 @@ export const userServices = {
 
   async read(id: string, repository: UserRepositoryTypes) {
     try {
-      const user = await repository.getUserByID(id);
+      const userData = await repository.getUserByID(id);
 
-      if (!user) throw new AppError("user not found", 404);
+      if (!userData) throw new AppError("user not found!", 404);
 
-      delete user.password;
+      delete userData.password;
 
-      return user;
+      return userData;
     } catch (error) {
       throw error;
     }

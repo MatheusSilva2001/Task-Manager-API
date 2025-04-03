@@ -3,24 +3,30 @@ import { CreateUserDataType } from "./userRepository";
 const users = [
   {
     id: "1",
-    name: "João",
+    name: "user1",
     email: "user1@email.com",
-    password: "$2b$10$HOQ3cGTI3YpjnIMrS5OGYefddZIFOtfOpFMoHiWh7L3028AXxZUyW",
+    password: "$2b$10$7LxCCXAAvkWj8di5um53eOiy2HThbqoLSm07g5Eahm4DmDJbTYrTe",
   },
+
   {
     id: "2",
-    name: "João",
+    name: "user2",
     email: "user2@email.com",
-    password: "$2b$10$HOQ3cGTI3YpjnIMrS5OGYefddZIFOtfOpFMoHiWh7L3028AXxZUyW",
+    password: "$2b$10$7LxCCXAAvkWj8di5um53eOiy2HThbqoLSm07g5Eahm4DmDJbTYrTe",
   },
-] as CreateUserDataType[];
+];
 
 export const userRepositoryInMemory = {
-  async create({ id, name, email, password }: CreateUserDataType) {
+  async createUser({ id, name, email, password }: CreateUserDataType) {
     try {
-      users.push({ id, name, email, password });
+      const user = {
+        id,
+        name,
+        email,
+        password,
+      };
 
-      console.log(users);
+      users.push(user);
 
       return users[users.length - 1];
     } catch (error) {
@@ -28,20 +34,18 @@ export const userRepositoryInMemory = {
     }
   },
 
-  async getUserByEmail(email: string) {
+  async getUserByID(id: string) {
     try {
-      const user = users.find((user) => user.email === email);
-
+      const user = users.find((user) => user.id == id);
       return user;
     } catch (error) {
       throw error;
     }
   },
 
-  async getUserByID(id: string) {
+  async getUserByEmail(email: string) {
     try {
-      const user = users.find((user) => user.id === id);
-
+      const user = users.find((user) => user.email == email);
       return user;
     } catch (error) {
       throw error;
