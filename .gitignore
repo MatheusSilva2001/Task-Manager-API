@@ -1,6 +1,0 @@
-node_modules
-# database.db
-coverage
-dist
-.env
-.git
