@@ -17,7 +17,7 @@ app.use(cookieParser());
 const whiteList = [
   // "http://localhost:5173",
   // "http://127.0.0.1:5173",
-  "task-manager-wdc-f3wa.vercel.app",
+  "https://task-manager-wdc-f3wa.vercel.app",
 ];
 
 app.use(
